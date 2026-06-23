@@ -1,0 +1,144 @@
+﻿@model LinePerformanceDashboard.Models.TblOperatorDetail
+
+@{
+    ViewData["Title"] = "Operator Details";
+}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+
+            <div class="card shadow-lg border-0">
+
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Add New Operator Detail</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form asp-action="Create" method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <div class="row g-3">
+                            <!--Prod. Date -->
+                            <div class="col-md-6">
+                                <label asp-for="ProdDate" class="form-label">
+                                    Date <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="ProdDate" type="date" class="form-control" />
+
+                                <span asp-validation-for="ProdDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Operator Name -->
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label">
+                                    Operator Name <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <!-- ProcessName -->
+                            <div class="col-md-6">
+                                <label asp-for="ProcessName" class="form-label">
+                                    Process Name <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="ProcessName" class="form-control" />
+                                <span asp-validation-for="ProcessName" class="text-danger"></span>
+                            </div>
+                            <!-- LineNo -->
+                            <div class="col-md-6">
+                                <label asp-for="LineNo" class="form-label">
+                                    Line No. <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="LineNo" class="form-control" />
+                                <span asp-validation-for="LineNo" class="text-danger"></span>
+                            </div>
+
+                            <!-- AvgCycle -->
+                            <div class="col-md-6">
+                                <label asp-for="AvgCycle" class="form-label">
+                                    Avg. Cycle <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="AvgCycle" class="form-control" />
+                                <span asp-validation-for="AvgCycle" class="text-danger"></span>
+                            </div>
+
+                            <!-- CapacityHr -->
+                            <div class="col-md-6">
+                                <label asp-for="CapacityHr" class="form-label">
+                                    Capacity/Hr<span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="CapacityHr" class="form-control" />
+                                <span asp-validation-for="CapacityHr" class="text-danger"></span>
+                            </div>
+                            <!-- Remarks -->
+                            <div class="col-md-6">
+                                <label asp-for="Remark" class="form-label">
+                                    Remarks <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Remark" class="form-control" />
+                                <span asp-validation-for="Remark" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+
+                            <a asp-action="OperatorDetailsList"
+                               class="btn btn-outline-secondary">
+                                ← Back
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-success px-4">
+                                Save
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const inputs = document.querySelectorAll("input");
+
+        inputs.forEach(input => {
+
+            input.addEventListener("input", function () {
+
+                let validationSpan =
+                    document.querySelector(
+                        `[data-valmsg-for="${this.name}"]`
+                    );
+
+                if (validationSpan && this.value.trim() !== "") {
+                    validationSpan.textContent = "";
+                }
+
+            });
+
+        });
+
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,233 @@
+﻿@model IEnumerable<LinePerformanceDashboard.Models.TblOperatorDetail>
+
+@{
+    ViewData["Title"] = "Operator Detail List";
+
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+
+    int pageSize = 15;
+    int sl = (currentPage - 1) * pageSize;
+
+    string search = ViewBag.Search ?? "";
+}
+
+<h2>Operator Detail List</h2>
+
+<p class="text-muted" id="totalCount">
+    Total Operator Details:
+    <strong>@ViewBag.totalOperatorDetails</strong>
+</p>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <div class="col-md-4 p-0">
+        <input type="text"
+               id="searchBox"
+               value="@search"
+               class="form-control"
+               placeholder="Search Operator / Process" />
+    </div>
+
+    <div>
+        <a asp-controller="OperatorDetails" asp-action="Create" class="btn btn-primary me-2">
+            Create
+        </a>
+
+        <a asp-controller="Home" asp-action="OperatorDetailsList" class="btn btn-secondary">
+            Back
+        </a>
+    </div>
+
+</div>
+
+<div id="operatorTable">
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered table-striped table-hover">
+
+            <thead class="table-dark">
+
+                <tr>
+                    <th>SL</th>
+                    <th>Prod. Date</th>
+                    <th>Operator Name</th>
+                    <th>Line No.</th>
+                    <th>Process Name</th>
+                    <th>Avg. Cycle</th>
+                    <th>Capacity/Hr</th>
+                    <th>Remarks</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        sl++;
+
+                        <tr>
+
+                            <td>@sl</td>
+
+                            <td>
+                                @(item.ProdDate != null? Convert.ToDateTime(item.ProdDate).ToString("dd-MMM-yyyy") : "")
+                            </td>
+
+                            <td>@item.Name</td>
+
+                            <td>@item.LineNo</td>
+
+                            <td>@item.ProcessName</td>
+
+                            <td>@item.AvgCycle</td>
+
+                            <td>@item.CapacityHr</td>
+
+                            <td>@item.Remark</td>
+
+                            <td class="text-center">
+
+                                <a asp-controller="OperatorDetails"
+                                   asp-action="Edit"
+                                   asp-route-id="@item.Oid"
+                                   class="btn btn-success btn-sm me-1">
+                                    Edit
+                                </a>
+
+                                <a asp-controller="OperatorDetails"
+                                   asp-action="Delete"
+                                   asp-route-id="@item.Oid"
+                                   class="btn btn-danger btn-sm">
+                                    Delete
+                                </a>
+
+                            </td>
+
+                        </tr>
+                                }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-danger">
+                            No Data Found
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<nav aria-label="Operator Detail Pagination">
+
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+
+            <a class="page-link"
+               href="@Url.Action("Index","OperatorDetails",
+                                   new { page = currentPage - 1, search = search })">
+
+                Previous
+
+            </a>
+
+        </li>
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+
+                <a class="page-link"
+                   href="@Url.Action("Index","OperatorDetails",
+                                           new { page = i, search = search })">
+
+                @i
+
+                </a>
+
+            </li>
+                }
+
+        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+
+            <a class="page-link"
+               href="@Url.Action("Index","OperatorDetails",
+                                   new { page = currentPage + 1, search = search })">
+
+                Next
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</nav>
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function () {
+
+            var typingTimer;
+            var delay = 800;
+
+            $("#searchBox").on("keyup", function () {
+
+                clearTimeout(typingTimer);
+
+                var search = $(this).val();
+
+                typingTimer = setTimeout(function () {
+
+                    $.ajax({
+
+                        url: '@Url.Action("OperatorDetailsList", "OperatorDetails")',
+
+                        type: 'GET',
+
+                        data: {
+                            search: search,
+                            page: 1
+                        },
+
+                        success: function (data) {
+
+                            var result = $(data).find("#operatorTable").html();
+                            $("#operatorTable").html(result);
+
+                            var total = $(data).find("#totalCount").html();
+                            $("#totalCount").html(total);
+
+                        },
+
+                        error: function () {
+
+                            alert("Failed to load data.");
+
+                        }
+
+                    });
+
+                }, delay);
+
+            });
+
+        });
+
+    </script>
+
+}
