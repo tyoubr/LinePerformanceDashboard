@@ -4,11 +4,11 @@ using System.Data;
 
 namespace LinePerformanceDashboard.Controllers
 {
-    public class LinePerformanceDashboardController : Controller
+    public class LineEighteenDashboardController : Controller
     {
         private readonly IConfiguration _configuration;
 
-        public LinePerformanceDashboardController(IConfiguration configuration)
+        public LineEighteenDashboardController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -26,7 +26,7 @@ namespace LinePerformanceDashboard.Controllers
             var connectionString = _configuration.GetConnectionString("DefaultConnection");
 
             using var con = new SqlConnection(connectionString);
-            using var cmd = new SqlCommand("SP_56_LINE_D", con)
+            using var cmd = new SqlCommand("SP_18_LINE_D", con)
             {
                 CommandType = CommandType.StoredProcedure,
                 CommandTimeout = 300
@@ -40,7 +40,7 @@ namespace LinePerformanceDashboard.Controllers
             {
                 data.Add(new LineWiseDTO
                 {
-                    Date = reader["PROD_DATE"] != DBNull.Value? Convert.ToDateTime(reader["PROD_DATE"]).Date: (DateTime?)null,
+                    Date = reader["PROD_DATE"] != DBNull.Value ? Convert.ToDateTime(reader["PROD_DATE"]).Date : (DateTime?)null,
                     LineName = reader["LINE_NAME"]?.ToString(),
                     ItemName = reader["ITEM_NAME"]?.ToString(),
                     BuyerName = reader["BUYER_NAME"]?.ToString(),
@@ -63,7 +63,7 @@ namespace LinePerformanceDashboard.Controllers
             var connStr = _configuration.GetConnectionString("DefaultConnection");
 
             using var con = new SqlConnection(connStr);
-            using var cmd = new SqlCommand("SP_56_LINE_D", con)
+            using var cmd = new SqlCommand("SP_18_LINE_D", con)
             {
                 CommandType = CommandType.StoredProcedure,
                 CommandTimeout = 300
@@ -120,7 +120,7 @@ namespace LinePerformanceDashboard.Controllers
                 PROD_DATE,
                 REMARK
             FROM TBL_OPERATOR_DETAIL
-            WHERE LINE_NO = 'Modular (56)' AND  PROD_DATE >= @StartDate
+            WHERE LINE_NO<>'Modular (56)' AND PROD_DATE >= @StartDate
               AND PROD_DATE < DATEADD(DAY, 1, @StartDate)
         ";
 
@@ -206,7 +206,7 @@ namespace LinePerformanceDashboard.Controllers
 
         public class LineWiseDTO
         {
-            public DateTime?Date { get; set; }
+            public DateTime? Date { get; set; }
             public string? LineName { get; set; }
             public string? ItemName { get; set; }
             public string? BuyerName { get; set; }
