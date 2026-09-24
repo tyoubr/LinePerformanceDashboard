@@ -7,6 +7,7 @@
     int totalPages = ViewBag.TotalPages ?? 1;
 
     int pageSize = 15;
+
     int sl = (currentPage - 1) * pageSize;
 
     string search = ViewBag.Search ?? "";
@@ -21,25 +22,40 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
 
+    <!-- Search -->
     <div class="col-md-4 p-0">
+
         <input type="text"
                id="searchBox"
                value="@search"
                class="form-control"
                placeholder="Search Operator / Process" />
+
     </div>
 
+    <!-- Buttons -->
     <div>
-        <a asp-controller="OperatorDetails" asp-action="Create" class="btn btn-primary me-2">
+
+        <a asp-controller="OperatorDetails"
+           asp-action="Create"
+           class="btn btn-primary me-2">
             Create
         </a>
 
-        <a asp-controller="Home" asp-action="OperatorDetailsList" class="btn btn-secondary">
+        <a asp-controller="OperatorDetails"
+           asp-action="OperatorDetailsList"
+           class="btn btn-secondary">
             Back
         </a>
+
     </div>
 
 </div>
+
+
+<!-- ===================================================== -->
+<!-- TABLE -->
+<!-- ===================================================== -->
 
 <div id="operatorTable">
 
@@ -67,30 +83,56 @@
 
                 @if (Model != null && Model.Any())
                 {
-                    @foreach (var item in Model)
+                    foreach (var item in Model)
                     {
                         sl++;
 
                         <tr>
 
-                            <td>@sl</td>
-
+                            <!-- SL -->
                             <td>
-                                @(item.ProdDate != null? Convert.ToDateTime(item.ProdDate).ToString("dd-MMM-yyyy") : "")
+                                @sl
                             </td>
 
-                            <td>@item.Name</td>
+                            <!-- Production Date -->
+                            <td>
+                                @(item.ProdDate != null
+                                                        ? Convert.ToDateTime(item.ProdDate)
+                                                        .ToString("dd-MMM-yyyy")
+                                                        : "")
+                    </td>
 
-                            <td>@item.LineNo</td>
+                            <!-- Operator Name -->
+                            <td>
+                                @item.Name
+                            </td>
 
-                            <td>@item.ProcessName</td>
+                            <!-- Line -->
+                            <td>
+                                @item.LineNo
+                            </td>
 
-                            <td>@item.AvgCycle</td>
+                            <!-- Process -->
+                            <td>
+                                @item.ProcessName
+                            </td>
 
-                            <td>@item.CapacityHr</td>
+                            <!-- Average Cycle -->
+                            <td>
+                                @item.AvgCycle
+                            </td>
 
-                            <td>@item.Remark</td>
+                            <!-- Capacity -->
+                            <td>
+                                @item.CapacityHr
+                            </td>
 
+                            <!-- Remarks -->
+                            <td>
+                                @item.Remark
+                            </td>
+
+                            <!-- Actions -->
                             <td class="text-center">
 
                                 <a asp-controller="OperatorDetails"
@@ -115,9 +157,14 @@
                 else
                 {
                     <tr>
-                        <td colspan="9" class="text-center text-danger">
+
+                        <td colspan="9"
+                            class="text-center text-danger">
+
                             No Data Found
+
                         </td>
+
                     </tr>
                 }
 
@@ -129,53 +176,104 @@
 
 </div>
 
-<nav aria-label="Operator Detail Pagination">
 
-    <ul class="pagination justify-content-center">
+<!-- ===================================================== -->
+<!-- PAGINATION -->
+<!-- ===================================================== -->
+@if (totalPages > 0)
+{
+    <nav aria-label="Operator Detail Pagination">
 
-        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+        <ul class="pagination justify-content-center">
 
-            <a class="page-link"
-               href="@Url.Action("Index","OperatorDetails",
-                                   new { page = currentPage - 1, search = search })">
+            <!-- PREVIOUS -->
+            @if (currentPage > 1)
+            {
+                <li class="page-item">
 
-                Previous
+                    <a class="page-link"
+                       asp-controller="OperatorDetails"
+                       asp-action="OperatorDetailsList"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-pageSize="@pageSize"
+                       asp-route-search="@search">
 
-            </a>
+                        Previous
 
-        </li>
+                    </a>
 
-        @for (int i = 1; i <= totalPages; i++)
-        {
-            <li class="page-item @(i == currentPage ? "active" : "")">
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
 
-                <a class="page-link"
-                   href="@Url.Action("Index","OperatorDetails",
-                                           new { page = i, search = search })">
+                    <span class="page-link">
+                        Previous
+                    </span>
 
-                @i
+                </li>
+            }
 
-                </a>
 
-            </li>
-                }
+            <!-- PAGE NUMBERS -->
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
 
-        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-controller="OperatorDetails"
+                       asp-action="OperatorDetailsList"
+                       asp-route-page="@i"
+                       asp-route-pageSize="@pageSize"
+                       asp-route-search="@search">
 
-            <a class="page-link"
-               href="@Url.Action("Index","OperatorDetails",
-                                   new { page = currentPage + 1, search = search })">
+                        @i
 
-                Next
+                    </a>
 
-            </a>
+                </li>
+            }
 
-        </li>
 
-    </ul>
+            <!-- NEXT -->
+            @if (currentPage < totalPages)
+            {
+                <li class="page-item">
 
-</nav>
+                    <a class="page-link"
+                       asp-controller="OperatorDetails"
+                       asp-action="OperatorDetailsList"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-pageSize="@pageSize"
+                       asp-route-search="@search">
 
+                        Next
+
+                    </a>
+
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+                        Next
+                    </span>
+
+                </li>
+            }
+
+        </ul>
+
+    </nav>
+}
+
+
+<!-- ===================================================== -->
+<!-- SEARCH AJAX -->
+<!-- ===================================================== -->
 @section Scripts {
 
     <script>
@@ -183,13 +281,17 @@
         $(document).ready(function () {
 
             var typingTimer;
+
             var delay = 800;
+
 
             $("#searchBox").on("keyup", function () {
 
                 clearTimeout(typingTimer);
 
+
                 var search = $(this).val();
+
 
                 typingTimer = setTimeout(function () {
 
@@ -201,20 +303,45 @@
 
                         data: {
                             search: search,
-                            page: 1
+                            page: 1,
+                            pageSize: 15
                         },
+
 
                         success: function (data) {
 
-                            var result = $(data).find("#operatorTable").html();
+                            // Replace table
+                            var result =
+                                $(data).find("#operatorTable").html();
+
                             $("#operatorTable").html(result);
 
-                            var total = $(data).find("#totalCount").html();
+
+                            // Replace total count
+                            var total =
+                                $(data).find("#totalCount").html();
+
                             $("#totalCount").html(total);
+
+
+                            // Update browser URL
+                            var newUrl =
+                                '@Url.Action("OperatorDetailsList", "OperatorDetails")'
+                                + '?page=1&search='
+                                + encodeURIComponent(search);
+
+                            window.history.pushState(
+                                {},
+                                '',
+                                newUrl
+                            );
 
                         },
 
-                        error: function () {
+
+                        error: function (xhr) {
+
+                            console.log(xhr.responseText);
 
                             alert("Failed to load data.");
 

@@ -18,31 +18,55 @@ public class OperatorDetailsController : Controller
     [HttpGet]
     public async Task<IActionResult> OperatorDetailsList(int page = 1,int pageSize = 15,string search = "")
     {
+        // Safety checks
+        if (page < 1)
+            page = 1;
 
+        if (pageSize <= 0)
+            pageSize = 15;
+
+        // Get data
         var query = _context.TblOperatorDetails.AsQueryable();
 
+        // Search
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(x =>
+            search = search.Trim();
 
-                    EF.Functions.Like(x.Name, "%" + search + "%") ||
-                    EF.Functions.Like(x.ProcessName, "%" + search + "%")
-                );
+            query = query.Where(x =>
+                EF.Functions.Like(x.Name, "%" + search + "%") ||
+                EF.Functions.Like(x.ProcessName, "%" + search + "%")
+            );
         }
 
+        // Total records
         var totalRecords = await query.CountAsync();
-        ViewBag.CurrentPage = page;
-        ViewBag.TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
-        ViewBag.totalOperatorDetails = totalRecords;
-        ViewBag.Search = search;
-        var operatosDetails = await query
-            .OrderBy(r => r.Oid)
+
+        // Total pages
+        var totalPages = (int)Math.Ceiling(
+            totalRecords / (double)pageSize
+        );
+
+        // Prevent invalid page
+        if (totalPages > 0 && page > totalPages)
+            page = totalPages;
+
+        // Get paginated data
+        var operatorDetails = await query
+            .OrderBy(x => x.Oid)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
 
-        return View(operatosDetails);
+        // Send values to View
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.totalOperatorDetails = totalRecords;
+        ViewBag.Search = search;
+
+        return View(operatorDetails);
     }
+
     [HttpGet]
     public IActionResult Create()
     {
