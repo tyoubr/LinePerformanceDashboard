@@ -5,8 +5,7 @@
 
     int currentPage = ViewBag.CurrentPage ?? 1;
     int totalPages = ViewBag.TotalPages ?? 1;
-
-    int pageSize = 15;
+    int pageSize = ViewBag.PageSize ?? 10;
 
     int sl = (currentPage - 1) * pageSize;
 
@@ -138,6 +137,9 @@
                                 <a asp-controller="OperatorDetails"
                                    asp-action="Edit"
                                    asp-route-id="@item.Oid"
+                                   asp-route-page="@currentPage"
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-search="@search"
                                    class="btn btn-success btn-sm me-1">
                                     Edit
                                 </a>

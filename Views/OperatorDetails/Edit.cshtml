@@ -21,6 +21,9 @@
 
                         <!-- Hidden ID -->
                         <input type="hidden" asp-for="Oid" />
+                        <input type="hidden" name="page" value="@ViewBag.Page" />
+                        <input type="hidden" name="pageSize" value="@ViewBag.PageSize" />
+                        <input type="hidden" name="search" value="@ViewBag.Search" />
 
                         <div asp-validation-summary="ModelOnly"
                              class="text-danger mb-3">

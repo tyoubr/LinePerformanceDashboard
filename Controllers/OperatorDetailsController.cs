@@ -16,7 +16,7 @@ public class OperatorDetailsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> OperatorDetailsList(int page = 1,int pageSize = 15,string search = "")
+    public async Task<IActionResult> OperatorDetailsList(int page = 1,int pageSize = 10,string search = "")
     {
         // Safety checks
         if (page < 1)
@@ -113,20 +113,80 @@ public class OperatorDetailsController : Controller
         }
     }
 
+    //[HttpGet]
+    //public IActionResult Edit(int id)
+    //{
+    //    var data = _context.TblOperatorDetails.FirstOrDefault(x => x.Oid == id);
+    //    return View(data);
+    //}
+
     [HttpGet]
-    public IActionResult Edit(int id)
+    [HttpGet]
+    public IActionResult Edit(int id,int page = 1,int pageSize = 10,string search = "")
     {
-        var data = _context.TblOperatorDetails.FirstOrDefault(x => x.Oid == id);
+        var data = _context.TblOperatorDetails
+            .FirstOrDefault(x => x.Oid == id);
+
+        if (data == null)
+            return NotFound();
+
+        ViewBag.Page = page;
+        ViewBag.PageSize = pageSize;
+        ViewBag.Search = search;
+
         return View(data);
     }
 
+
+
+    //[HttpPost]
+    //public IActionResult Edit(TblOperatorDetail model)
+    //{
+    //    _context.TblOperatorDetails.Update(model);
+    //    _context.SaveChanges();
+    //    return RedirectToAction("OperatorDetailsList");
+    //}
+
     [HttpPost]
-    public IActionResult Edit(TblOperatorDetail model)
+    [ValidateAntiForgeryToken]
+    public IActionResult Edit(TblOperatorDetail model,int page = 1,int pageSize = 10,string search = "")
     {
-        _context.TblOperatorDetails.Update(model);
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Page = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.Search = search;
+
+            return View(model);
+        }
+
+        var data = _context.TblOperatorDetails
+            .FirstOrDefault(x => x.Oid == model.Oid);
+
+        if (data == null)
+            return NotFound();
+
+        data.ProdDate = model.ProdDate;
+        data.Name = model.Name;
+        data.ProcessName = model.ProcessName;
+        data.LineNo = model.LineNo;
+        data.AvgCycle = model.AvgCycle;
+        data.CapacityHr = model.CapacityHr;
+        data.Remark = model.Remark;
+
         _context.SaveChanges();
-        return RedirectToAction("OperatorDetailsList");
+
+        return RedirectToAction(
+            "OperatorDetailsList",
+            "OperatorDetails",
+            new
+            {
+                page = page,
+                pageSize = pageSize,
+                search = search
+            });
     }
+
 
     [HttpGet]
     public IActionResult Delete(int id)
